@@ -29,6 +29,7 @@
 
 #include "mp_precomp.h"
 #include "phydm_precomp.h"
+#include "phydm_csi.h"
 
 #ifdef PHYDM_COMPILE_MU
 u8 phydm_get_gid(struct dm_struct *dm, u8 *phy_status_inf)
@@ -977,6 +978,12 @@ void phydm_phy_sts_n_parsing(struct dm_struct *dm,
 	dm->dm_fat_table.antsel_rx_keep_0 = phy_sts->ant_sel;
 	dm->dm_fat_table.antsel_rx_keep_1 = phy_sts->ant_sel_b;
 	dm->dm_fat_table.antsel_rx_keep_2 = phy_sts->antsel_rx_keep_2;
+	#endif
+
+	/* RTL8188FTV CSI patch: read CSI data from phy status descriptor */
+	#if (RTL8188F_SUPPORT)
+	if ((dm->support_ic_type & ODM_RTL8188F) && !pktinfo->is_cck_rate)
+		phydm_csi_query(dm, phy_info, phy_status_inf);
 	#endif
 }
 #endif

@@ -5388,6 +5388,45 @@ static ssize_t proc_set_amsdu_mode(struct file *file, const char __user *buffer,
 
 }
 
+/* Forward declarations — defined in hal/phydm/phydm_csi.c */
+void phydm_rx_phy_stats_proc_show(struct dm_struct *dm, void *m);
+void phydm_bb_scan_proc_show(void *m);
+void phydm_c2h_log_proc_show(void *m);
+
+/*
+ * rx_phy_stats: per-packet PHY descriptor fields captured in softirq context.
+ * Exposes GAIN, PWDB, EVM, SNR, NOISE, CFO, CSI_VALID and live BBP register
+ * snapshots. Named rx_phy_stats (not csi_data) because RTL8188FU does not
+ * provide per-subcarrier CSI coefficients — this is aggregate PHY layer info.
+ */
+static int proc_get_rx_phy_stats(struct seq_file *m, void *v)
+{
+	struct net_device *dev = m->private;
+	_adapter *adapter = (_adapter *)rtw_netdev_priv(dev);
+	struct dm_struct *dm = adapter_to_phydm(adapter);
+
+	phydm_rx_phy_stats_proc_show(dm, m);
+	return 0;
+}
+
+/*
+ * bb_scan: bulk snapshot of BB registers 0xC00-0xEFF polled via workqueue.
+ * Tracks NONZERO and CHANGED sets across consecutive scans. Complements the
+ * existing read_reg procfs entry by providing automated temporal diffing and
+ * bulk coverage triggered per received packet (not on-demand).
+ */
+static int proc_get_bb_scan(struct seq_file *m, void *v)
+{
+	phydm_bb_scan_proc_show(m);
+	return 0;
+}
+
+static int proc_get_c2h_log(struct seq_file *m, void *v)
+{
+	phydm_c2h_log_proc_show(m);
+	return 0;
+}
+
 /*
 * rtw_adapter_proc:
 * init/deinit when register/unregister net_device
@@ -5861,6 +5900,10 @@ const struct rtw_proc_hdl adapter_proc_hdls[] = {
 #if defined(CONFIG_CONCURRENT_MODE) && defined(CONFIG_AP_MODE)
 	RTW_PROC_HDL_SSEQ("ap_csa_cnt", proc_get_ap_csa_cnt, proc_set_ap_csa_cnt),
 #endif
+
+	RTW_PROC_HDL_SSEQ("rx_phy_stats", proc_get_rx_phy_stats, NULL),
+	RTW_PROC_HDL_SSEQ("bb_scan", proc_get_bb_scan, NULL),
+	RTW_PROC_HDL_SSEQ("c2h_log", proc_get_c2h_log, NULL),
 };
 
 const int adapter_proc_hdls_num = sizeof(adapter_proc_hdls) / sizeof(struct rtw_proc_hdl);

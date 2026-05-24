@@ -17,6 +17,7 @@
 #include <rtl8188f_hal.h>
 #include "hal_com_h2c.h"
 #include "hal8188f_fw.h"
+#include "../phydm/phydm_csi.h"
 
 #if 0 /* FW tx packet write */
 	#define FW_DOWNLOAD_SIZE_8188F 8192
@@ -4727,6 +4728,7 @@ static s32 c2h_handler_8188f(_adapter *adapter, u8 id, u8 seq, u8 plen, u8 *payl
 		CCX_FwC2HTxRpt_8188f(adapter, payload, plen);
 		break;
 	default:
+		phydm_c2h_log_entry(id, seq, plen, payload);
 		ret = _FAIL;
 		break;
 	}

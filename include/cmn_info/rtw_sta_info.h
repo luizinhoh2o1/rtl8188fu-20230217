@@ -258,6 +258,16 @@ struct phydm_phyinfo_struct {
 	u8		cnt_cca2agc_rdy;
 /*ODM_PHY_STATUS_NEW_TYPE_SUPPORT*/
 	u8		rx_cck_evm;
+	/* CSI data from per-packet phy status descriptor (RTL8188FTV patch) */
+	u32		csi1_raw;	/* stream_csi[0]: CSI amplitude, stream A */
+	u32		csi2_raw;	/* stream_rxevm[0] as u8: EVM magnitude, stream A */
+	u32		csi_evm_raw;	/* path_rxsnr[0]: SNR in 0.5dB units, path A */
+	u8		csi_valid;	/* 1 = path_rxsnr[0] != 0 (valid OFDM on path A) */
+	/* Raw descriptor fields not covered by standard phydm parsing */
+	u8		phy_target_csi_a;	/* stream_target_csi[0] */
+	u8		phy_noise_db;		/* noise_power_db_msb */
+	s8		phy_sig_evm;		/* sig_evm: overall signal EVM */
+	u8		phy_ch_corr_a;		/* ch_corr[0]: channel correlation path A */
 };
 
 struct phydm_perpkt_info_struct {

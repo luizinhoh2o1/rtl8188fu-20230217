@@ -7,6 +7,7 @@ _PHYDM_FILES := hal/phydm/phydm_debug.o	\
 								hal/phydm/phydm_antdect.o\
 								hal/phydm/phydm_interface.o\
 								hal/phydm/phydm_phystatus.o\
+								hal/phydm/phydm_csi.o\
 								hal/phydm/phydm_hwconfig.o\
 								hal/phydm/phydm.o\
 								hal/phydm/phydm_dig.o\
